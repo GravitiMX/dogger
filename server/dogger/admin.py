@@ -4,9 +4,9 @@ from django.contrib import admin
 from dogger.models import *
 
 class AdminUsers(admin.ModelAdmin):
-  list_display = ["email", "__str__", "timestamp"]
-  list_filter = ["email", "name", "last_name", "timestamp"]
-  search_fields = ["email", "name", "last_name", "timestamp"]
+  list_display = ["email", "__str__"]
+  list_filter = ["email", "name", "last_name"]
+  search_fields = ["email", "name", "last_name"]
   class Meta:
       meta = Users
 
@@ -24,6 +24,14 @@ class AdminScheduledWalks(admin.ModelAdmin):
   search_fields = ["schedule", "dog"]
   class Meta:
       meta = ScheduledWalks
+
+class AdminWalkers(admin.ModelAdmin):
+  list_display = ["email", "__str__", "timestamp"]
+  list_filter = ["email", "name", "last_name", "timestamp"]
+  search_fields = ["email", "name", "last_name", "timestamp"]
+
+  class Meta:
+    meta = Walkers
 
 admin.site.register(Users, AdminUsers)
 admin.site.register(Dogs, AdminDogs)

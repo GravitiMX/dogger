@@ -18,7 +18,7 @@ const logUpValidation = Yup.object().shape({
     .max(50, 'El apellido es demasiado largo')
     .required('Campo requerido'),
   phone: Yup.string()
-    .matches(/[0-9].{10,}/g, 'Debe tener diez digitos')
+    .matches(/[0-9].{9,}/g, 'Debe tener diez digitos')
     .required('Campo requerido'),
   address: Yup.string()
     .required('Campo requerido'),

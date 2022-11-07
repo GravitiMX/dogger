@@ -14,3 +14,7 @@ export const Title = styled.h3`
   font-size: 2rem;
   margin-bottom: 5%;
 `
+
+export const Group = styled.div`
+  margin-bottom: 10%
+` 

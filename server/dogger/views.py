@@ -11,7 +11,8 @@ from dogger.models import DogSize as DogSizeModel
 from dogger.models import Schedules as SchedulesModel
 from dogger.models import ScheduledWalks as ScheduledWalksModel
 from dogger.models import Walkers as WalkersModel
-
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 # Create your views here.	
 
 class UsersDetailsView(APIView):
@@ -100,17 +101,22 @@ class DogsDetailsView(APIView):
 class UsersView(APIView):
 	"""
 	List all users, or create new user.
-	"""
-	
 	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-	
+	"""
+	@method_decorator(csrf_exempt)
+	def dispatch(self, request, *args, **kwargs):
+		return super().dispatch(request, *args, **kwargs)
+
+
+	@method_decorator(csrf_exempt)
 	def get(self, request, format=None):
-		users = DogsModel.objects.all()
-		serializer = DogSerializer(users, many=True)
+		users = UsersModel.objects.all()
+		serializer = UserSerializer(users, many=True)
 		return Response(serializer.data)
 
+	@csrf_exempt
 	def post(self, request, format=None):
-		serializer = DogSerializer(data=request.data)
+		serializer = UserSerializer(data=request.data)
 		if serializer.is_valid():
 			serializer.save()
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -122,7 +128,6 @@ class UsersDetailsView(APIView):
 	Retrieve, update or delete a dog instance.
 	"""
 	
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 	
 	def get_object(self, pk):
 		try:
@@ -285,7 +290,7 @@ class WalkersView(APIView):
 	List all walkers, create a new walker.
 	"""
 	
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+	#permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 	
 	def get(self, request, format=None):
 		users = WalkersModel.objects.all()

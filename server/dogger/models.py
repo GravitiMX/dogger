@@ -6,17 +6,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 
-class Dogs(models.Model):
-    id = models.AutoField(primary_key = True)
-    name = models.CharField(max_length=50)
-    age = models.IntegerField()
-    size = models.IntegerField()
-    owner = models.ForeignKey('Users', on_delete=models.CASCADE)
-    walker = models.ForeignKey('Walkers', null=True, blank=True, on_delete=models.SET_NULL)
-
-    def __str__ (self):
-        return self.name
-
 class DogSize(models.Model):
     id = models.AutoField(primary_key = True)
     size = models.CharField(max_length=8)
@@ -50,6 +39,20 @@ class Users(models.Model):
     def __str__(self):
         return self.name
 
+
+class Dogs(models.Model):
+    id = models.AutoField(primary_key = True)
+    name = models.CharField(max_length=50)
+    breed = models.CharField(max_length = 40)
+    age = models.IntegerField()
+    size = models.CharField(max_length = 10)
+    owner = models.ForeignKey('Users', on_delete=models.CASCADE)
+    walker = models.ForeignKey('Walkers', null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__ (self):
+        return self.name
+
+
 class Walkers(models.Model):
     password = models.CharField(primary_key = True ,  max_length = 256 ,blank= True)
     name = models.CharField(max_length = 50)
@@ -57,7 +60,7 @@ class Walkers(models.Model):
     email = models.CharField(max_length = 100)
     phone = models.CharField(max_length = 50)
     adress = models.CharField(max_length = 50)
-    
+    avalible = models.BooleanField()
     
     def __str__(self):
         return self.name

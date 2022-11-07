@@ -13,57 +13,76 @@ from dogger.models import ScheduledWalks as ScheduledWalksModel
 from dogger.models import Walkers as WalkersModel
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+import json
 # Create your views here.	
 
-class UsersDetailsView(APIView):
-	"""
-	Retrieve, update or delete a user instance.
-	"""
-	
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-	
-	def get_object(self, pk):
-		try:
-			return UsersModel.objects.get(pk=pk)
-		except Users.DoesNotExist:
-			raise Http404
-
-	def get(self, request, pk, format=None):
-		user = self.get_object(pk)
-		serializer = UserSerializer(user)
-		return Response(serializer.data)
-	
-	def put(self, request, pk, format=None):
-		user = self.get_object(pk)
-		serializer = UserSerializer(user, data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(serializer.data)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-	
-	def delete(self, request, pk, format=None):
-		account = Auth.objects.filter(pk)
-		account.delete()
-		return Response(status=status.HTTP_204_NO_CONTENT)
 
 class DogsView(APIView):
 	"""
 	List all users, or create new user.
 	"""
-	
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-	
+	@method_decorator(csrf_exempt)
+	def dispatch(self, request, *args, **kwargs):
+		return super().dispatch(request, *args, **kwargs)
+
+	@method_decorator(csrf_exempt)
 	def get(self, request, format=None):
 		users = DogsModel.objects.all()
 		serializer = DogSerializer(users, many=True)
 		return Response(serializer.data)
 
+	@csrf_exempt
 	def post(self, request, format=None):
-		serializer = DogSerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(serializer.data, status=status.HTTP_201_CREATED)
-		return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+		datas = json.loads(request.body)
+		
+		user = UsersModel.objects.get(pk = datas['owner'])
+		
+		print(datas)
+		serializerUser = UserSerializer(user)
+		data = request.data
+		print(data)
+		dog = Dogs.objects.create(name = datas['name'], age = datas['age'], size = datas['size'], breed = datas['breed'], owner =user )
+		print(data)
+		data['owner'] = serializerUser.data
+		print(data)
+		serializer = DogSerializer(data=data)
+		
+		return Response({'success':'success'}, status=status.HTTP_201_CREATED)
+		
+
+class Dogs3View(APIView):
+	"""
+	List all users, or create new user.
+	"""
+	@method_decorator(csrf_exempt)
+	def dispatch(self, request, *args, **kwargs):
+		return super().dispatch(request, *args, **kwargs)
+
+	@method_decorator(csrf_exempt)
+	def get(self, request,owner, format=None):
+		users = DogsModel.objects.filter(owner = owner)
+		serializer = DogSerializer(users, many=True)
+		return Response(serializer.data)
+
+	@csrf_exempt
+	def post(self, request, format=None):
+		datas = json.loads(request.body)
+		
+		user = UsersModel.objects.get(pk = datas['owner'])
+		
+		print(datas)
+		serializerUser = UserSerializer(user)
+		data = request.data
+		print(data)
+		dog = Dogs.objects.create(name = datas['name'], age = datas['age'], size = datas['size'], breed = datas['breed'], owner =user )
+		print(data)
+		data['owner'] = serializerUser.data
+		print(data)
+		serializer = DogSerializer(data=data)
+		
+		return Response({'success':'success'}, status=status.HTTP_201_CREATED)
+		
+
 
 
 class DogsDetailsView(APIView):
@@ -128,21 +147,23 @@ class UsersDetailsView(APIView):
 	Retrieve, update or delete a dog instance.
 	"""
 	
-	
-	def get_object(self, pk):
+	def get_object(self, pk, email):
 		try:
-			return DogsModel.objects.get(pk=pk)
-		except Dogs.DoesNotExist:
+			user = UsersModel.objects.get(pk=pk)
+			if user.email == email:
+				return user
+			return Http404
+		except User.DoesNotExist:
 			raise Http404
 
-	def get(self, request, pk, format=None):
-		user = self.get_object(pk)
-		serializer = DogSerializer(user)
+	def get(self, request,pk, email):
+		user = self.get_object(pk =  pk, email = email)
+		serializer = UserSerializer(user)
 		return Response(serializer.data)
 	
 	def put(self, request, pk, format=None):
 		user = self.get_object(pk)
-		serializer = DogSerializer(user, data=request.data)
+		serializer = UserSerializer(user, data=request.data)
 		if serializer.is_valid():
 			serializer.save()
 			return Response(serializer.data)
@@ -334,3 +355,4 @@ class WalkersDetailsView(APIView):
 		user = self.get_object(pk)
 		user.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
+

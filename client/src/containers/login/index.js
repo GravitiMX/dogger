@@ -13,14 +13,18 @@ import {
   Title,
   Group
 } from './styled'
+import Cookies from "universal-cookie"
+import AuthRoute from "../../App"
+import App from '../../App'
+
 
 const initialValues = {
-  email: '',
-  password: '',
+  email: 'marcoorduna@ciencias.unam.mx',
+  password: 'nejihyuga_1A',
   picked: ''
 }
-
-const API_URL = ''; 
+const cookies = new Cookies();
+const API_URL = 'http://127.0.0.1:8000/api/v1/users/'; 
 
 const LogIn = () => {
   return (
@@ -33,7 +37,24 @@ const LogIn = () => {
           validationSchema={logInValidation}
           onSubmit={async (props) => {
             console.log('formik props >>>', props)
-
+            let res = await getUser(props)
+            const data = await res.json()
+            
+            console.log(data)
+            if (res){
+              cookies.set("name", data.name);
+              cookies.set("email", data.email);
+              cookies.set("last_name", data.last_name) ;
+              cookies.set("adress", data.adress) ;
+              cookies.set("password",data.password);
+              alert(`Bienvenido ${data.name} ${data.last_name}`);
+              
+              window.location.href = '/dashboarduser'
+            }else{
+              alert("El usario o contrasena no coinciden")
+            }
+            
+            
           }}
         >
           {({
@@ -97,21 +118,16 @@ const LogIn = () => {
   )
 }
 
-export const getUser = async (newUser) => {
-  return await fetch(API_URL, {
-    
+export const getUser = async (user) => {
+  let api = API_URL.concat(String(user.password.trim()));
+  api = api.concat("/")
+  api = api.concat(String(user.email).trim())
+  
+  return await fetch(api , {
     headers: {
       'Content-Type': 'application/json',
     },
     
-    body: JSON.stringify({
-      "name" : String(newUser.name).trim(),
-      "email": String(newUser.email).trim(),
-      "password": String(newUser.password).trim(),
-      "last_name":String(newUser.lastName).trim(),
-      "phone": String(newUser.phone).trim(),
-      "adress":String(newUser.address).trim(),
-    })
   });
 
 };

@@ -1,5 +1,9 @@
+import Cookies from "universal-cookie"
+
+const cookie = new Cookies();
+
 const initialState = {
-  isLogged: false
+  isLogged:true
 }
 
 const account = (state = initialState, { type, payload}) => {

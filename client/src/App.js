@@ -10,16 +10,25 @@ import { Navbar } from './components'
 import {
   Home,
   LogIn,
-  LogUp
+  LogUp,
+  DashboardUser,
+  RegisterDog,
 } from './containers';
 
+import Cookies from 'universal-cookie'
+
+const cookies = new Cookies();
+
+
+
 const AuthRoute = ({ isLogged }) => (
+  
   <Route path="/dashboard">
     {
       isLogged
       ? (<>
           <h6>Dashboard</h6>
-          {/* <Dashboard /> */}
+          <DashboardUser />
         </>
         )
       : (
@@ -34,6 +43,7 @@ const AuthRoute = ({ isLogged }) => (
 )
 
 function App(props) {
+  console.log(props.isLogged)
   const { isLogged } = props
   return (
     <Router>
@@ -49,8 +59,20 @@ function App(props) {
           <Route path="/log-up">
             <LogUp />
           </Route>
+
+          <Route path= "/dashboarduser">
+            <DashboardUser />
+          </Route>
+
+          <Route path = "/registrarPerro">
+            <RegisterDog>
+              
+            </RegisterDog>
+          </Route>
+            
           <AuthRoute 
             isLogged={isLogged}
+           
           />
         </Switch>
       </div>

@@ -202,13 +202,14 @@ export const registerWalker = async (newUser) => {
     },
     
     data:post_data,
-    body: JSON.stringify({
+    body: JSON.stringify({                                    
       "name" : String(newUser.name).trim(),
       "email": String(newUser.email).trim(),
       "password": String(newUser.password).trim(),
       "last_name":String(newUser.lastName).trim(),
       "phone": String(newUser.phone).trim(),
       "adress":String(newUser.address).trim(),
+      "avalible" : true
     })
   });
 

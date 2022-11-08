@@ -49,7 +49,13 @@ const LogIn = () => {
               cookies.set("password",data.password);
               alert(`Bienvenido ${data.name} ${data.last_name}`);
               
-              window.location.href = '/dashboarduser'
+              if(!props.picked == "Walker"){
+                window.location.href = '/dashboarduser'
+              }else{
+                window.location.href = '/dashboardwalker'
+              }
+
+
             }else{
               alert("El usario o contrasena no coinciden")
             }

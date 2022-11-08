@@ -312,12 +312,12 @@ class WalkersView(APIView):
 	"""
 	
 	#permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-	
+	@csrf_exempt
 	def get(self, request, format=None):
 		users = WalkersModel.objects.all()
 		serializer = WalkerSerializer(users, many=True)
 		return Response(serializer.data)
-
+	@csrf_exempt
 	def post(self, request, format=None):
 		serializer = WalkerSerializer(data=request.data)
 		if serializer.is_valid():
@@ -329,15 +329,17 @@ class WalkersDetailsView(APIView):
 	"""
 	Retrieve, update or delete a walker instance.
 	"""
-	
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-	
+	@method_decorator(csrf_exempt)
+	def dispatch(self, request, *args, **kwargs):
+		return super().dispatch(request, *args, **kwargs)
+
+	@method_decorator(csrf_exempt)
 	def get_object(self, pk):
 		try:
 			return WalkersModel.objects.get(pk=pk)
 		except Walkers.DoesNotExist:
 			raise Http404
-
+	@csrf_exempt
 	def get(self, request, pk, format=None):
 		user = self.get_object(pk)
 		serializer = WalkerSerializer(user)

@@ -13,9 +13,12 @@ import {
   LogUp,
   DashboardUser,
   RegisterDog,
+  ScheduledWalker,
+  DashboardWalker,
 } from './containers';
 
-import Cookies from 'universal-cookie'
+import Cookies from 'universal-cookie';
+import RegisterSchedule from './containers/registerSchedule';
 
 const cookies = new Cookies();
 
@@ -69,7 +72,24 @@ function App(props) {
               
             </RegisterDog>
           </Route>
+          
+          <Route path= "/registrarSchedule">
+            <RegisterSchedule>
+              
+            </RegisterSchedule>
+          </Route>
+
+          <Route path = "/agendarPaseador">
+            <ScheduledWalker/>
+          </Route>
+
+          <Route path = "/dashboardwalker">
+            <DashboardWalker>
+              
+            </DashboardWalker>
+          </Route>
             
+
           <AuthRoute 
             isLogged={isLogged}
            

@@ -1,23 +1,18 @@
 import React, {useEffect,useState} from 'react'
-import { Formik,Dropdown, Field } from 'formik'
+import { Formik, Field } from 'formik'
 import {
-  Button,
-  Input,
-  SelectAnidados
+  Button
 } from '../../components'
-import registerDogValidation  from "../../validationSchemas/registerDog.js"
 import {
   Container,
-  Group
 } from './styled'
 import Cookies from 'universal-cookie'
 import SelectList from "../../components/selecList"
 const API_URL_WALKERS = 'http://127.0.0.1:8000/api/v1/walkers/'
-const API_URL_DOGS = 'http://127.0.0.1:8000/api/v1/dogs/'
+
 const API_URL = 'http://127.0.0.1:8000/api/v1/dogs3/';
 const API_URL_SCHEDULES = 'http://127.0.0.1:8000/api/v1/scheduled-walks/'
 const cookies = new Cookies();
-
 
 
 const initialValues = {
@@ -85,13 +80,14 @@ const ScheduledWalker = ({title, url, handleChange}) => {
     return (
         <Container>
 
-          <div>
-            Registrar un Paseo
-          </div>
-          <div>
-            Paseadores disponibles:
-            
-          </div>
+          <h2>
+            Registrar un paseo
+          </h2>
+
+          <h2>
+            Paseadores Disponibles
+
+          </h2>
           <div>
           { listWalker?.map((c) => (
                         <button name = {c.name}>
@@ -110,9 +106,10 @@ const ScheduledWalker = ({title, url, handleChange}) => {
           console.log('formik props >>>', props);
           let res = await registerSchedule(props);
           console.log(res)
-          // if (res){
-          //   window.location.href = '/dashboarduser' 
-          // }
+          if (res){
+            alert("Paseo registrado con exito")
+            window.location.href = '/dashboarduser' 
+          }
 
         }}
       >
@@ -127,7 +124,7 @@ const ScheduledWalker = ({title, url, handleChange}) => {
           <>
     
             <div>
-            <h2>Select Anidados</h2>
+            <h2>Selecciona el perro que deseas agendar</h2>
 
              <div>
                   <Field as="select" name="dog">
@@ -145,7 +142,10 @@ const ScheduledWalker = ({title, url, handleChange}) => {
              
               </div> 
 
-
+            <h2>
+              Ahora selecciona el paseador que desees
+              </h2>       
+            
             <SelectList 
             name = "walker"
             title = 'name' 

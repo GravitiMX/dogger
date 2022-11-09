@@ -1,5 +1,4 @@
-import React, { Component }  from 'react';
-import { useState, useEffect } from 'react';
+import React  from 'react';
 import { useFetch } from '../../hooks/useFetch';
 
 const SelectList = ({title, url, handleChange}) => {
@@ -22,7 +21,7 @@ const SelectList = ({title, url, handleChange}) => {
                 <option value="">
                     ----Elige un {title}-----
                 </option>
-                {data[0].password && !data[0].id && data.map((el) => <option value={el.password}>{el.name } </option>    )}
+                {data[0].password && !data[0].id && data.map((el) => <option value={el.email}>{el.name } </option>    )}
                 {!data[0].id && !data[0].password && data.map((el) => <option value={  el.day_of_week}>{el.day_of_week } </option>    )}    
                 {data[0].id && !data[0].password && data.map((el) => <option value={  el.hour}>{el.hour } </option>    )}    
                 

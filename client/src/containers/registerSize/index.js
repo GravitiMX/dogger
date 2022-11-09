@@ -1,13 +1,11 @@
 import React from 'react'
 import { Formik, Field } from 'formik'
 import {
-  Button,
-  Input
+  Button
 } from '../../components'
-import registerDogValidation  from "../../validationSchemas/registerDog.js"
 import {
   Container,
-  Group
+
 } from './styled'
 import Cookies from 'universal-cookie'
 
@@ -80,7 +78,7 @@ export const RegisterS = async (newSize) => {
   let pass = cookies.get("password")
   console.log(pass)
 
-  let user = cookies.get("password") 
+  let user = cookies.get("email") 
 
 
   return await fetch(API_URL, {
@@ -90,7 +88,7 @@ export const RegisterS = async (newSize) => {
     },
     body: JSON.stringify({
       "size" : String(newSize.size),
-      "password" : String(user)
+      "email" : String(user)
     })
   });
 

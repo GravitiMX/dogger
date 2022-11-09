@@ -18,11 +18,7 @@ import {
   RegisterSize,
 } from './containers';
 
-import Cookies from 'universal-cookie';
 import RegisterSchedule from './containers/registerSchedule';
-import SelectAnidados from './components/select';
-
-const cookies = new Cookies();
 
 
 
@@ -48,7 +44,6 @@ const AuthRoute = ({ isLogged }) => (
 )
 
 function App(props) {
-  console.log(props.isLogged)
   const { isLogged } = props
   return (
     <Router>

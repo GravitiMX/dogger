@@ -2,12 +2,9 @@ import React from 'react'
 import { Formik, Field } from 'formik'
 import {
   Button,
-  Input
 } from '../../components'
-import registerDogValidation  from "../../validationSchemas/registerDog.js"
 import {
   Container,
-  Group
 } from './styled'
 import Cookies from 'universal-cookie'
 
@@ -106,7 +103,7 @@ export const RegisterS = async (newDog) => {
   let pass = cookies.get("password")
   console.log(pass)
 
-  let user = cookies.get("password") 
+  let user = cookies.get("email") 
 
 
   return await fetch(API_URL, {
@@ -117,7 +114,7 @@ export const RegisterS = async (newDog) => {
     body: JSON.stringify({
       "day" : String(newDog.day).trim(),
       "hour" : parseInt(newDog.hour),
-      "password" : String(user)
+      "email" : String(user)
     })
   });
 

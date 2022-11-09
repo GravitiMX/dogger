@@ -4,7 +4,6 @@ import {
   Button,
   Input
 } from '../../components'
-import registerDogValidation  from "../../validationSchemas/registerDog.js"
 import {
   Container,
   Group

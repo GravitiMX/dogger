@@ -13,23 +13,19 @@ import {
 } from './styled'
 import { useHistory } from 'react-router-dom'
 
-
-
 const API_URL_USER = 'http://127.0.0.1:8000/api/v1/users/'
 const API_URL_WALKER = 'http://127.0.0.1:8000/api/v1/walkers/'
 
 const initialValues = {
-  email: 'marcoorduna@ciencias.unam.mx',
-  password: 'nejihyuga_1A',
-  name: 'Marco',
-  lastName: 'Avila',
-  phone: '5574879293',
-  address: 'Maximo Garcia',
-  confirmPassword: 'nejihyuga_1A',
+  email: '',
+  password: '',
+  name: '',
+  lastName: '',
+  phone: '',
+  address: '',
+  confirmPassword: '',
   picked: ''
 }
-
-
 
 const LogUp = () => {
   let history = useHistory()
@@ -44,7 +40,7 @@ const LogUp = () => {
         onSubmit={async (props) => {
           console.log('formik props >>>', props);
           console.log(props.picked)
-          if (props.picked == 'User'){
+          if (props.picked === 'User'){
             await registerUser(props);
             history.push("/")
           }else{
@@ -134,7 +130,6 @@ const LogUp = () => {
               
             />
             <Group>
-
             <div id="my-radio-group"></div>
               <div role="group" aria-labelledby="my-radio-group">
                 <label>
@@ -145,14 +140,8 @@ const LogUp = () => {
                   <Field type="radio" name="picked" value="Walker" />
                   Paseador
                 </label>
-
-                
-
-
             </div>
             </Group>
-
-
             <Button
               disabled={!isValid || isSubmitting}
               onPress={handleSubmit}
@@ -166,14 +155,11 @@ const LogUp = () => {
     </Container>
   )
 }
-
 var post_data = {
   
   'csrfmiddlewaretoken':"{{ csrf_token }}"
   
 }
-
-
 export const registerUser = async (newUser) => {
   return await fetch(API_URL_USER, {
     method: 'POST',
@@ -215,5 +201,4 @@ export const registerWalker = async (newUser) => {
   });
 
 };
-
 export default LogUp

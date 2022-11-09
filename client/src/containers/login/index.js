@@ -14,9 +14,6 @@ import {
   Group
 } from './styled'
 import Cookies from "universal-cookie"
-import AuthRoute from "../../App"
-import App from '../../App'
-
 
 const initialValues = {
   email: 'marcoorduna@ciencias.unam.mx',
@@ -24,8 +21,8 @@ const initialValues = {
   picked: ''
 }
 const cookies = new Cookies();
-const API_URL_USER = 'http://127.0.0.1:8000/api/v1/users/';
-const API_URL_WALKER = 'http://127.0.0.1:8000/api/v1/walkers/'; 
+const API_URL_USER = 'http://127.0.0.1:8000/api/v1/usersBody/';
+const API_URL_WALKER = 'http://127.0.0.1:8000/api/v1/walkersBody/'; 
 
 const LogIn = () => {
   return (
@@ -39,9 +36,12 @@ const LogIn = () => {
           onSubmit={async (props) => {
             console.log('formik props >>>', props)
             
-            if(props.picked == 'User'){
+            if(props.picked === 'User'){
+              console.log("entro al if")
+              console.log(props)
               let res = await getUser(props)
               const data = await res.json()
+              console.log(data)
               if (res){
                 cookies.set("name", data.name);
                 cookies.set("email", data.email);
@@ -50,7 +50,7 @@ const LogIn = () => {
                 cookies.set("password",data.password);
                 alert(`Bienvenido ${data.name} ${data.last_name}`);
                
-                if(props.picked == 'User'){
+                if(props.picked === 'User'){
                    window.location.href = '/dashboarduser'
                  }else{
                    window.location.href = '/dashboardwalker'
@@ -72,7 +72,7 @@ const LogIn = () => {
                 cookies.set("password",data.password);
                 alert(`Bienvenido ${data.name} ${data.last_name}`);
                
-                if(props.picked == 'User'){
+                if(props.picked === 'User'){
                    window.location.href = '/dashboarduser'
                  }else{
                    window.location.href = '/dashboardwalker'
@@ -152,30 +152,40 @@ const LogIn = () => {
     </Container>
   )
 }
-
-export const getUser = async (user) => {
-  let api = API_URL_USER.concat(String(user.password.trim()));
-  api = api.concat("/")
-  api = api.concat(String(user.email).trim())
+var post_data = {
   
-  return await fetch(api , {
+  'csrfmiddlewaretoken':"{{ csrf_token }}"
+  
+}
+export const getUser = async (newUser) => {
+  return await fetch(API_URL_USER, {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     
+    data:post_data,
+    body: JSON.stringify({
+      
+      "email": String(newUser.email).trim(),
+      "password": String(newUser.password).trim(),
+    })
   });
 
 };
-
-export const getWalker = async (walker) => {
-  let api = API_URL_WALKER.concat(String(walker.password.trim()));
-  api = api.concat("/")
-  api = api.concat(String(walker.email).trim())
-  return await fetch(api , {
+export const getWalker = async (newUser) => {
+  return await fetch(API_URL_WALKER, {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     
+    data:post_data,
+    body: JSON.stringify({
+      
+      "email": String(newUser.email).trim(),
+      "password": String(newUser.password).trim(),
+    })
   });
 
 };

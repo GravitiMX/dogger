@@ -141,6 +141,34 @@ class UsersView(APIView):
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class UsersBodyView(APIView):
+	def post(self, request, format=None):
+		datas = json.loads(request.body)
+		print(datas)
+		try:
+			user = UsersModel.objects.get(email = datas['email'], password = datas['password'])
+			print(user)
+			serializer = UserSerializer(user)
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		except:
+			print("error")
+
+class WalkersBodyView(APIView):
+	def post(self, request, format=None):
+		datas = json.loads(request.body)
+		print(datas)
+		try:
+			user = WalkersModel.objects.get(email = datas['email'], password = datas['password'])
+			print(user)
+			serializer = WalkerSerializer(user)
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		except:
+			print("error")
+	
+
+		
+
+
 
 class UsersDetailsView(APIView):
 	"""
@@ -172,7 +200,7 @@ class UsersDetailsView(APIView):
 	def delete(self, request, pk, format=None):
 		user = self.get_object(pk)
 		user.delete()
-		return Response(status=status.HTTP_204_NO_CONTENT)
+		return Response( status=status.HTTP_204_NO_CONTENT)
 
 
 
@@ -186,7 +214,7 @@ class DogSizeView(APIView):
 		return Response(serializer.data)
 	def post(self, request, format=None):
 		datas = json.loads(request.body)
-		
+		print(datas)
 		user = WalkersModel.objects.get(pk = datas['email'])
 		
 		serializerUser = WalkerSerializer(user)
@@ -212,6 +240,27 @@ class DogSizeDetailsView(APIView):
 		user = self.get_object(pk)
 		serializer = DogSizeSerializer(user)
 		return Response(serializer.data)
+
+class DogSizeForWalkerDetailsView(APIView):
+	"""
+	List a dog size instance.
+	"""
+	
+	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+	
+	def get_object(self, pk):
+		try:
+			return DogSizeModel.objects.filter(walker=pk)
+		except DogSize.DoesNotExist:
+			raise Http404
+
+	def get(self, request, pk, format=None):
+		user = self.get_object(pk)
+		serializer = DogSizeSerializer(user, many = True)
+		return Response(serializer.data)
+
+
+
 
 
 class WalkersView(APIView):
@@ -291,9 +340,9 @@ class SchedulesView(APIView):
 	def post(self, request, format=None):
 		datas = json.loads(request.body)
 		
-		user = WalkersModel.objects.get(pk = datas['password'])
-		
 		print(datas)
+		user = WalkersModel.objects.get(email = datas['email'])
+		
 		serializerUser = WalkerSerializer(user)
 		data = request.data
 		print(data)
@@ -314,8 +363,9 @@ class SchedulesDetailsView(APIView):
 	"""
 	
 	def get_object(self, pk):
+		print(pk)
 		try:
-			return SchedulesModel.objects.get(pk=pk)
+			return SchedulesModel.objects.get(walker=pk)
 		except Schedules.DoesNotExist:
 			raise Http404
 
@@ -338,6 +388,41 @@ class SchedulesDetailsView(APIView):
 		user.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+
+class Schedules3DetailsView(APIView):
+	"""
+	Retrieve, update or delete a schedule instance.
+	"""
+	
+	def get_object(self, pk):
+		print(pk)
+		try:
+			return SchedulesModel.objects.filter(walker=pk)
+		except Schedules.DoesNotExist:
+			raise Http404
+
+	def get(self, request, pk, format=None):
+		user = self.get_object(pk)
+		
+		serializer = ScheduleSerializer(user, many =True)
+		return Response(serializer.data)
+	
+	def put(self, request, pk, format=None):
+		user = self.get_object(pk)
+		serializer = ScheduleSerializer(user, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	
+	def delete(self, request, pk, format=None):
+		user = self.get_object(pk)
+		user.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 class SchedulesDetailsForWalkerView(APIView):
 	"""
 	Retrieve, update or delete a schedule instance.
@@ -350,7 +435,7 @@ class SchedulesDetailsForWalkerView(APIView):
 	@method_decorator(csrf_exempt)
 	def get_object(self, pk):
 		schedules = SchedulesModel.objects.filter(walker=pk).values( 'day_of_week', 'hour'	 )
-		print("------------------")
+		
 		print(schedules)
 		try:
 			return schedules
@@ -359,7 +444,7 @@ class SchedulesDetailsForWalkerView(APIView):
 	@method_decorator(csrf_exempt)
 	def get(self, request, pk, format=None):
 		user = self.get_object(pk)
-		print("====d=============")
+		
 		print(user)
 		serializer = ScheduleSerializer(user, many =True	)
 
@@ -392,8 +477,7 @@ class SchedulesDetailsForWalkerAndDayView(APIView):
 	@method_decorator(csrf_exempt)
 	def get_object(self, pk, day):
 		schedules = SchedulesModel.objects.filter(walker=pk, day_of_week = day).values('id', 'day_of_week', 'hour')
-		print("------------------")
-		print(schedules)
+		
 		try:
 			return schedules
 		except Schedules.DoesNotExist:
@@ -401,8 +485,7 @@ class SchedulesDetailsForWalkerAndDayView(APIView):
 	@method_decorator(csrf_exempt)
 	def get(self, request, pk, day, format=None):
 		user = self.get_object(pk, day)
-		print("====d=============")
-		print(user)
+		
 		serializer = ScheduleSerializer(user, many =True	)
 
 		return Response(serializer.data)
@@ -432,12 +515,16 @@ class ScheduledWalksView(APIView):
 		return Response(serializer.data)
 
 	def post(self, request, format=None):
+		
 		datas = json.loads(request.body)
 		
 		user = WalkersModel.objects.get(pk = datas['walker'])
 		print(datas)
 		dog = DogsModel.objects.get(name = datas['dog'], owner = datas['owner'])
 		print("perro")
+		dog.save(walker=user) 
+		
+
 		ScheduledWalks.objects.create(day_of_week = datas['day_of_week'], hour = datas['hour'], dog =dog, walker = user   )
 		 
 		
@@ -460,6 +547,37 @@ class ScheduledWalksDetailsView(APIView):
 		user = self.get_object(pk)
 		serializer = ScheduledWalkSerializer(user)
 		return Response(serializer.data)
+	
+	def put(self, request, pk, format=None):
+		user = self.get_object(pk)
+		serializer = ScheduledWalkSerializer(user, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	
+	def delete(self, request, pk, format=None):
+		user = self.get_object(pk)
+		user.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
+class ScheduledWalksForWalkerDetailsView(APIView):
+	"""
+	Retrieve, update or delete a scheduled walk instance.
+	"""
+	
+	def get_object(self, pk):
+		try:
+			query = DogsModel.objects.select_related('walker')
+
+			print(query)
+			return 
+		except ScheduledWalks.DoesNotExist:
+			raise Http404
+
+	def get(self, request, pk,  format=None):
+		user = self.get_object(pk)
+		
+		return Response(user)
 	
 	def put(self, request, pk, format=None):
 		user = self.get_object(pk)

@@ -10,16 +10,26 @@ import { Navbar } from './components'
 import {
   Home,
   LogIn,
-  LogUp
+  LogUp,
+  DashboardUser,
+  RegisterDog,
+  ScheduledWalker,
+  DashboardWalker,
+  RegisterSize,
 } from './containers';
 
+import RegisterSchedule from './containers/registerSchedule';
+
+
+
 const AuthRoute = ({ isLogged }) => (
+  
   <Route path="/dashboard">
     {
       isLogged
       ? (<>
           <h6>Dashboard</h6>
-          {/* <Dashboard /> */}
+          <DashboardUser />
         </>
         )
       : (
@@ -49,8 +59,43 @@ function App(props) {
           <Route path="/log-up">
             <LogUp />
           </Route>
+
+          <Route path= "/dashboarduser">
+            <DashboardUser />
+          </Route>
+
+          <Route path = "/registrarPerro">
+            <RegisterDog>
+              
+            </RegisterDog>
+          </Route>
+          <Route path="/registerSize">
+            <RegisterSize>
+
+            </RegisterSize>
+          </Route>
+          
+          
+          <Route path= "/registrarSchedule">
+            <RegisterSchedule>
+              
+            </RegisterSchedule>
+          </Route>
+          
+          <Route path = "/agendarPaseador">
+            <ScheduledWalker/>
+          </Route>
+
+          <Route path = "/dashboardwalker">
+            <DashboardWalker>
+              
+            </DashboardWalker>
+          </Route>
+            
+
           <AuthRoute 
             isLogged={isLogged}
+           
           />
         </Switch>
       </div>

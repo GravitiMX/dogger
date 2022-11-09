@@ -1,5 +1,5 @@
 const initialState = {
-  isLogged: false
+  isLogged:true
 }
 
 const account = (state = initialState, { type, payload}) => {

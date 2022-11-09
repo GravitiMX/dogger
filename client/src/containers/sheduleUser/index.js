@@ -5,7 +5,7 @@ import Cookies from "universal-cookie"
 const API_URL = 'http://127.0.0.1:8000/api/v1/dogs3/';
 
 export const listdogs = async() =>{
-    let api = API_URL.concat(cookies.get('password'))
+    let api = API_URL.concat(cookies.get('email'))
     console.log("Esto es la api")
     console.log(api)
     return await fetch(api)
@@ -44,7 +44,7 @@ const ScheduleUser = () => {
                     
                     { listDog?.map((c) => (
                         <button name = {c.id}>
-                            {c.breed}
+                            {c.name}
                         </button>
                       ))};
                     

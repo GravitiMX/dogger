@@ -2,7 +2,8 @@ import React, {useEffect,useState} from 'react'
 import { Formik,Dropdown, Field } from 'formik'
 import {
   Button,
-  Input
+  Input,
+  SelectAnidados
 } from '../../components'
 import registerDogValidation  from "../../validationSchemas/registerDog.js"
 import {
@@ -10,61 +11,77 @@ import {
   Group
 } from './styled'
 import Cookies from 'universal-cookie'
-
-const API_URL = 'http://127.0.0.1:8000/api/v1/walkers/'
-const API_URL_Schedules = 'http://127.0.0.1:8000/api/v1/schedule/'
-
+import SelectList from "../../components/selecList"
+const API_URL_WALKERS = 'http://127.0.0.1:8000/api/v1/walkers/'
+const API_URL_DOGS = 'http://127.0.0.1:8000/api/v1/dogs/'
+const API_URL = 'http://127.0.0.1:8000/api/v1/dogs3/';
+const API_URL_SCHEDULES = 'http://127.0.0.1:8000/api/v1/scheduled-walks/'
 const cookies = new Cookies();
 
 
-export const listdogs = async() =>{
-    return await fetch(API_URL)
-}
-
-export const listschedules = async()=>{
-    return await fetch(API_URL_Schedules)
-}
 
 const initialValues = {
-    name: '',
-    horario: '',
+    dog : '',
+    walkerV: '',
+    dayV: '',
+    hourV: ''
     
   }
 
-const ScheduledWalker = () => {
-  const [listWalker, setListWalker] = useState();
-  const [listScheduled, setListScheduled] = useState();
+  export const listdogs = async() =>{
+    let api = API_URL.concat(cookies.get('email'))
+    
+    return await fetch(api)
+}
 
-
-  const listD = async() => {
-      try {
-          const res = await listdogs();
-          const data = await res.json();
-          console.log(data)
-          setListWalker(data)
-
-      } catch (error) {
-          console.log(error   )
-      }
-  }
-  const listS = async() =>{
-    try {
-      const res = await listdogs();
-      const data = await res.json();
-      console.log(data)
-      setListWalker(data)
-
-  } catch (error) {
-      console.log(error   )
-  }
+  export const  listWalkers = async()=>{
+    return await fetch(API_URL_WALKERS)
   }
 
   
-  useEffect(() =>{
-      listD();
-      listS();
-  }, []); 
+const ScheduledWalker = ({title, url, handleChange}) => {
 
+  const [walker, setWalker] = useState('')
+  
+  const [scheduleDay, setScheduleDay] = useState('')
+  const [scheduleHour, setScheduleHour] = useState('')
+  const [listWalker, setListWalker] = useState();
+ 
+  
+
+
+  const listW = async() => {
+    try {
+      const res = await listWalkers();
+      const data = await res.json()
+      setListWalker(data)
+      
+    } catch (error) {
+      
+    }
+  }
+  const [listDog, setListDog] = useState();
+
+
+
+    const listD = async() => {
+        try {
+            const res = await listdogs();
+            const data = await res.json();
+            console.log(data)
+            setListDog(data)
+
+        } catch (error) {
+            console.log(error   )
+        }
+    }
+    
+    
+  useEffect(() =>{
+    listW();
+    listD();
+  }, []);
+ 
     return (
         <Container>
 
@@ -73,26 +90,29 @@ const ScheduledWalker = () => {
           </div>
           <div>
             Paseadores disponibles:
-
+            
           </div>
           <div>
           { listWalker?.map((c) => (
-                        <button name = {c.id}>
-                            {c.password}
+                        <button name = {c.name}>
+                            {c.name}
                         </button>
-                      ))}
+           ))}
           </div>
-
+          
     <Formik
         initialValues={initialValues}
         onSubmit={async (props) => {
-          console.log("entro al submit")
+          props.walkerV = walker
+          props.dayV = scheduleDay
+          props.hourV = scheduleHour
+         
           console.log('formik props >>>', props);
-          let res = await registerDog(props);
+          let res = await registerSchedule(props);
           console.log(res)
-          if (res){
-            window.location.href = '/dashboarduser' 
-          }
+          // if (res){
+          //   window.location.href = '/dashboarduser' 
+          // }
 
         }}
       >
@@ -105,32 +125,63 @@ const ScheduledWalker = () => {
           
         }) => (
           <>
+    
+            <div>
+            <h2>Select Anidados</h2>
+
+             <div>
+                  <Field as="select" name="dog">
+                { listDog?.map((c) => (
+                  <>
+                  
+                <option value={c.name}>{c.name}</option>
+                
+                  </>
+                
+                
+                ))};
+                </Field>
+
              
-             <Field as="select" name="name">
-            { listWalker?.map((c) => (
-              
-              
-                        <option name = {c.id}>
-                            {c.password}
-                        </option>
-                      ))}
-              </Field>
-              
+              </div> 
 
 
-
-
-            <Field as="select" name="">
-
-
-             <option value="red">Red</option>
-             <option value="green">Green</option>
-             <option value="blue">Blue</option>
-           </Field>   
+            <SelectList 
+            name = "walker"
+            title = 'name' 
+            url ='http://127.0.0.1:8000/api/v1/walkers/'
+            handleChange = {(e)=>{
+                setWalker(e.target.value)}} 
+            />
+            {walker && (
+                <SelectList 
+                
+                title = 'day' 
+                url = {`http://127.0.0.1:8000/api/v1/schedule-day-for-walker/${walker}/`}
+                handleChange = {(e)=>{
+                    setScheduleDay(e.target.value)
+                    
+                }
+                } 
+                />
+            )}
             
-           
-             
-          
+            {scheduleDay && (
+                <SelectList
+
+                title = 'hour' 
+                url = {`http://127.0.0.1:8000/api/v1/schedule-hour-for-walker-and-day/${walker}/${scheduleDay}`}
+                handleChange = {(e)=>{
+                    setScheduleHour(e.target.value)}} 
+                />
+            )}
+
+
+
+            
+            
+
+        </div>
 
 
             <Button
@@ -150,24 +201,24 @@ const ScheduledWalker = () => {
     );
 }
 
-export const registerDog = async (newDog) => {
+export const registerSchedule = async (newSchedule) => {
   console.log(
     "entro a la funcion "
   
   )
   let pass = cookies.get("password")
   console.log(pass)
-  return await fetch(API_URL, {
+  return await fetch(API_URL_SCHEDULES, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      "name" : String(newDog.name).trim(),
-      "size": String(newDog.size).trim(),
-      "age" : newDog.age,
-      "breed":String(newDog.breed).trim(),
-      "owner": String(pass)  
+      "day_of_week" : String(newSchedule.dayV).trim(),
+      "hour": String(newSchedule.hourV).trim(),
+      "dog" : String(newSchedule.dog).trim(), 
+      "walker": String(newSchedule.walkerV).trim(),
+      "owner" : String(cookies.get("email")).trim()
     })
   });
 

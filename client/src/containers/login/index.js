@@ -24,7 +24,8 @@ const initialValues = {
   picked: ''
 }
 const cookies = new Cookies();
-const API_URL = 'http://127.0.0.1:8000/api/v1/users/'; 
+const API_URL_USER = 'http://127.0.0.1:8000/api/v1/users/';
+const API_URL_WALKER = 'http://127.0.0.1:8000/api/v1/walkers/'; 
 
 const LogIn = () => {
   return (
@@ -37,28 +38,56 @@ const LogIn = () => {
           validationSchema={logInValidation}
           onSubmit={async (props) => {
             console.log('formik props >>>', props)
-            let res = await getUser(props)
-            const data = await res.json()
             
-            console.log(data)
-            if (res){
-              cookies.set("name", data.name);
-              cookies.set("email", data.email);
-              cookies.set("last_name", data.last_name) ;
-              cookies.set("adress", data.adress) ;
-              cookies.set("password",data.password);
-              alert(`Bienvenido ${data.name} ${data.last_name}`);
-              
-              if(!props.picked == "Walker"){
-                window.location.href = '/dashboarduser'
+            if(props.picked == 'User'){
+              let res = await getUser(props)
+              const data = await res.json()
+              if (res){
+                cookies.set("name", data.name);
+                cookies.set("email", data.email);
+                cookies.set("last_name", data.last_name) ;
+                cookies.set("adress", data.adress) ;
+                cookies.set("password",data.password);
+                alert(`Bienvenido ${data.name} ${data.last_name}`);
+               
+                if(props.picked == 'User'){
+                   window.location.href = '/dashboarduser'
+                 }else{
+                   window.location.href = '/dashboardwalker'
+                 }
+  
+  
               }else{
-                window.location.href = '/dashboardwalker'
+                alert("El usario o contrasena no coinciden")
               }
-
-
+            
             }else{
-              alert("El usario o contrasena no coinciden")
+              let res = await getWalker(props)
+              const data = await res.json()
+              if (res){
+                cookies.set("name", data.name);
+                cookies.set("email", data.email);
+                cookies.set("last_name", data.last_name) ;
+                cookies.set("adress", data.adress) ;
+                cookies.set("password",data.password);
+                alert(`Bienvenido ${data.name} ${data.last_name}`);
+               
+                if(props.picked == 'User'){
+                   window.location.href = '/dashboarduser'
+                 }else{
+                   window.location.href = '/dashboardwalker'
+                 }
+  
+  
+              }else{
+                alert("El usario o contrasena no coinciden")
+              }
             }
+
+            
+            
+            console.log(props.picked)
+           
             
             
           }}
@@ -125,7 +154,7 @@ const LogIn = () => {
 }
 
 export const getUser = async (user) => {
-  let api = API_URL.concat(String(user.password.trim()));
+  let api = API_URL_USER.concat(String(user.password.trim()));
   api = api.concat("/")
   api = api.concat(String(user.email).trim())
   
@@ -137,5 +166,19 @@ export const getUser = async (user) => {
   });
 
 };
+
+export const getWalker = async (walker) => {
+  let api = API_URL_WALKER.concat(String(walker.password.trim()));
+  api = api.concat("/")
+  api = api.concat(String(walker.email).trim())
+  return await fetch(api , {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    
+  });
+
+};
+
 
 export default LogIn

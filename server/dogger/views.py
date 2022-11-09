@@ -149,7 +149,7 @@ class UsersDetailsView(APIView):
 	
 	def get_object(self, pk, email):
 		try:
-			user = UsersModel.objects.get(pk=pk)
+			user = UsersModel.objects.get(pk=email)
 			if user.email == email:
 				return user
 			return Http404
@@ -180,14 +180,21 @@ class DogSizeView(APIView):
 	"""
 	List all dog sizes
 	"""
-	
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-	
 	def get(self, request, format=None):
 		users = DogSizeModel.objects.all()
 		serializer = DogSizeSerializer(users, many=True)
 		return Response(serializer.data)
+	def post(self, request, format=None):
+		datas = json.loads(request.body)
+		
+		user = WalkersModel.objects.get(pk = datas['email'])
+		
+		serializerUser = WalkerSerializer(user)
+		data = request.data
+		schedule = DogSize.objects.create(size = datas['size'],  walker =user )
 
+		return Response({'success':'success'}, status=status.HTTP_201_CREATED)
+		
 class DogSizeDetailsView(APIView):
 	"""
 	List a dog size instance.
@@ -206,31 +213,105 @@ class DogSizeDetailsView(APIView):
 		serializer = DogSizeSerializer(user)
 		return Response(serializer.data)
 
+
+class WalkersView(APIView):
+	"""
+	List all walkers, create a new walker.
+	"""
+	@method_decorator(csrf_exempt)
+	def dispatch(self, request, *args, **kwargs):
+		return super().dispatch(request, *args, **kwargs)
+	#permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+	@method_decorator(csrf_exempt)
+	def get(self, request, format=None):
+		users = WalkersModel.objects.all()
+		serializer = WalkerSerializer(users, many=True)
+		return Response(serializer.data)
+	@method_decorator(csrf_exempt)
+	def post(self, request, format=None):
+		serializer = WalkerSerializer(data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class WalkersDetailsView(APIView):
+	"""
+	Retrieve, update or delete a walker instance.
+	"""
+	
+	def get_object(self, pk, email):
+		print(pk, email)
+		try:
+			user = WalkersModel.objects.get(pk=pk)
+			print(user)
+			if user.email == email:
+				return user
+			return Http404
+		except Walkers.DoesNotExist:
+			raise Http404
+	
+	def get(self, request, pk,email, format=None):
+		user = self.get_object(pk, email)
+		serializer = WalkerSerializer(user)
+		return Response(serializer.data)
+
+	def put(self, request, pk, format=None):
+		user = self.get_object(pk)
+		serializer = WalkerSerializer(user, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	
+	def delete(self, request, pk, format=None):
+		user = self.get_object(pk)
+		user.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
 class SchedulesView(APIView):
 	"""
 	List all schedules, create new schedules.
 	"""
 	
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-	
+
 	def get(self, request, format=None):
 		users = SchedulesModel.objects.all()
 		serializer = ScheduleSerializer(users, many=True)
 		return Response(serializer.data)
 
 	def post(self, request, format=None):
-		serializer = ScheduleSerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(serializer.data, status=status.HTTP_201_CREATED)
-		return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+		datas = json.loads(request.body)
+		
+		user = WalkersModel.objects.get(pk = datas['password'])
+		
+		print(datas)
+		serializerUser = WalkerSerializer(user)
+		data = request.data
+		print(data)
+		schedule = Schedules.objects.create(day_of_week = datas['day'], hour= datas['hour'], walker =user )
+		print(data)
+		data['owner'] = serializerUser.data
+		print(data)
+		serializer = DogSerializer(data=data)
+		
+		return Response({'success':'success'}, status=status.HTTP_201_CREATED)
+		
+
+
 
 class SchedulesDetailsView(APIView):
 	"""
 	Retrieve, update or delete a schedule instance.
 	"""
-	
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 	
 	def get_object(self, pk):
 		try:
@@ -240,6 +321,7 @@ class SchedulesDetailsView(APIView):
 
 	def get(self, request, pk, format=None):
 		user = self.get_object(pk)
+		
 		serializer = ScheduleSerializer(user)
 		return Response(serializer.data)
 	
@@ -256,25 +338,111 @@ class SchedulesDetailsView(APIView):
 		user.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
+class SchedulesDetailsForWalkerView(APIView):
+	"""
+	Retrieve, update or delete a schedule instance.
+	"""
+	@method_decorator(csrf_exempt)
+	def dispatch(self, request, *args, **kwargs):
+		return super().dispatch(request, *args, **kwargs)
+
+
+	@method_decorator(csrf_exempt)
+	def get_object(self, pk):
+		schedules = SchedulesModel.objects.filter(walker=pk).values( 'day_of_week', 'hour'	 )
+		print("------------------")
+		print(schedules)
+		try:
+			return schedules
+		except Schedules.DoesNotExist:
+			raise Http404
+	@method_decorator(csrf_exempt)
+	def get(self, request, pk, format=None):
+		user = self.get_object(pk)
+		print("====d=============")
+		print(user)
+		serializer = ScheduleSerializer(user, many =True	)
+
+		return Response(serializer.data)
+	@method_decorator(csrf_exempt)
+	def put(self, request, pk, format=None):
+		user = self.get_object(pk)
+		serializer = ScheduleSerializer(user, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	@method_decorator(csrf_exempt)
+	def delete(self, request, pk, format=None):
+		user = self.get_object(pk)
+		user.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class SchedulesDetailsForWalkerAndDayView(APIView):
+	"""
+	Retrieve, update or delete a schedule instance.
+	"""
+	@method_decorator(csrf_exempt)
+	def dispatch(self, request, *args, **kwargs):
+		return super().dispatch(request, *args, **kwargs)
+
+
+	@method_decorator(csrf_exempt)
+	def get_object(self, pk, day):
+		schedules = SchedulesModel.objects.filter(walker=pk, day_of_week = day).values('id', 'day_of_week', 'hour')
+		print("------------------")
+		print(schedules)
+		try:
+			return schedules
+		except Schedules.DoesNotExist:
+			raise Http404
+	@method_decorator(csrf_exempt)
+	def get(self, request, pk, day, format=None):
+		user = self.get_object(pk, day)
+		print("====d=============")
+		print(user)
+		serializer = ScheduleSerializer(user, many =True	)
+
+		return Response(serializer.data)
+	@method_decorator(csrf_exempt)
+	def put(self, request, pk, format=None):
+		user = self.get_object(pk)
+		serializer = ScheduleSerializer(user, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	@method_decorator(csrf_exempt)
+	def delete(self, request, pk, format=None):
+		user = self.get_object(pk)
+		user.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 class ScheduledWalksView(APIView):
 	"""
 	List all scheduled walks, create a new scheduled walk.
-	"""
-	
-	permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-	
+	"""	
 	def get(self, request, format=None):
 		users = ScheduledWalksModel.objects.all()
 		serializer = ScheduledWalkSerializer(users, many=True)
 		return Response(serializer.data)
 
 	def post(self, request, format=None):
-		serializer = ScheduledWalkSerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(serializer.data, status=status.HTTP_201_CREATED)
-		return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-	
+		datas = json.loads(request.body)
+		
+		user = WalkersModel.objects.get(pk = datas['walker'])
+		print(datas)
+		dog = DogsModel.objects.get(name = datas['dog'], owner = datas['owner'])
+		print("perro")
+		ScheduledWalks.objects.create(day_of_week = datas['day_of_week'], hour = datas['hour'], dog =dog, walker = user   )
+		 
+		
+		return Response({'success':'success'}, status=status.HTTP_201_CREATED)
+		
 class ScheduledWalksDetailsView(APIView):
 	"""
 	Retrieve, update or delete a scheduled walk instance.
@@ -305,56 +473,3 @@ class ScheduledWalksDetailsView(APIView):
 		user = self.get_object(pk)
 		user.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
-
-class WalkersView(APIView):
-	"""
-	List all walkers, create a new walker.
-	"""
-	
-	#permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-	@csrf_exempt
-	def get(self, request, format=None):
-		users = WalkersModel.objects.all()
-		serializer = WalkerSerializer(users, many=True)
-		return Response(serializer.data)
-	@csrf_exempt
-	def post(self, request, format=None):
-		serializer = WalkerSerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(serializer.data, status=status.HTTP_201_CREATED)
-		return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class WalkersDetailsView(APIView):
-	"""
-	Retrieve, update or delete a walker instance.
-	"""
-	@method_decorator(csrf_exempt)
-	def dispatch(self, request, *args, **kwargs):
-		return super().dispatch(request, *args, **kwargs)
-
-	@method_decorator(csrf_exempt)
-	def get_object(self, pk):
-		try:
-			return WalkersModel.objects.get(pk=pk)
-		except Walkers.DoesNotExist:
-			raise Http404
-	@csrf_exempt
-	def get(self, request, pk, format=None):
-		user = self.get_object(pk)
-		serializer = WalkerSerializer(user)
-		return Response(serializer.data)
-
-	def put(self, request, pk, format=None):
-		user = self.get_object(pk)
-		serializer = WalkerSerializer(user, data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(serializer.data)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-	
-	def delete(self, request, pk, format=None):
-		user = self.get_object(pk)
-		user.delete()
-		return Response(status=status.HTTP_204_NO_CONTENT)
-

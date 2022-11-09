@@ -11,9 +11,9 @@ class AdminUsers(admin.ModelAdmin):
       meta = Users
 
 class AdminDogs(admin.ModelAdmin):
-  list_display = ["name", "size", "owner", "walker"]
-  list_filter = ["name", "size", "owner", "walker"]
-  search_fields = ["name", "size", "owner", "walker"]
+  list_display = ["name", "size", "walker"]
+  list_filter = ["name", "size", "walker"]
+  search_fields = ["name", "size","walker"]
   class Meta:
       meta = Dogs
 

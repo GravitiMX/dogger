@@ -134,8 +134,8 @@ export const registerDog = async (newDog) => {
     "entro a la funcion "
   
   )
-  let pass = cookies.get("password")
-  console.log(pass)
+  let email = cookies.get("email")
+  console.log(email)
   return await fetch(API_URL, {
     method: 'POST',
     headers: {
@@ -146,7 +146,7 @@ export const registerDog = async (newDog) => {
       "size": String(newDog.size).trim(),
       "age" : newDog.age,
       "breed":String(newDog.breed).trim(),
-      "owner": String(pass)  
+      "owner": String(email)  
     })
   });
 

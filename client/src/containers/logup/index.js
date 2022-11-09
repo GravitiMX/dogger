@@ -17,6 +17,7 @@ import { useHistory } from 'react-router-dom'
 
 const API_URL_USER = 'http://127.0.0.1:8000/api/v1/users/'
 const API_URL_WALKER = 'http://127.0.0.1:8000/api/v1/walkers/'
+
 const initialValues = {
   email: 'marcoorduna@ciencias.unam.mx',
   password: 'nejihyuga_1A',

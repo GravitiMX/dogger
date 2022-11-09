@@ -5,7 +5,7 @@ import DashboardUser from './dashboardUser'
 import RegisterDog from './registerDog'
 import ScheduledWalker from './scheduledWalker'
 import DashboardWalker from './dashboardWalker'
-
+import RegisterSize from './registerSize'
 export {
   Home,
   LogIn,
@@ -13,5 +13,6 @@ export {
   DashboardUser,
   RegisterDog,
   ScheduledWalker,
-  DashboardWalker
+  DashboardWalker,
+  RegisterSize
 }

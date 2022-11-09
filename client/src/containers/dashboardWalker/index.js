@@ -10,6 +10,9 @@ const DashboardWalker = () => {
         window.location.href = '/registrarSchedule'
     }
     
+    const registerSize = () => {
+        window.location.href = '/registerSize'
+    }
 
 
     return (
@@ -17,6 +20,10 @@ const DashboardWalker = () => {
             
             <button onClick={registrarHorario}>
               Registrar un Horario 
+            </button>
+
+            <button onClick={registerSize}>
+                Registrar un tamano de perro    
             </button>
 
             

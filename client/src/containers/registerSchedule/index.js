@@ -34,11 +34,11 @@ const RegisterSchedule = () => {
         onSubmit={async (props) => {
           console.log("entro al submit")
           console.log('formik props >>>', props);
-          let res = await registerDog(props);
+          let res = await RegisterS(props);
           console.log(res)
-          // if (res){
-          //   window.location.href = '/dashboarduser' 
-          // }
+          if (res){
+            window.location.href = '/dashboardwalker' 
+          }
 
         }}
       >
@@ -98,7 +98,7 @@ const RegisterSchedule = () => {
     );
 }
 
-export const registerDog = async (newDog) => {
+export const RegisterS = async (newDog) => {
   console.log(
     "entro a la funcion "
   

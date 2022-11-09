@@ -30,10 +30,10 @@ class Schedules(models.Model):
 
         
 class Users(models.Model):
-    password = models.CharField(primary_key = True, max_length = 256, blank= True)
+    password = models.CharField( max_length = 256, blank= True)
     name = models.CharField(max_length = 50)
     last_name = models.CharField(max_length = 50)
-    email = models.CharField(max_length = 100)
+    email = models.CharField(primary_key = True,max_length = 100)
     phone = models.CharField(max_length = 50)
     adress = models.CharField(max_length = 50)
     def __str__(self):

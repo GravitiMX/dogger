@@ -15,6 +15,9 @@ urlpatterns = [
     path('schedule/<int:pk>/', views.SchedulesDetailsView.as_view()),
     path('scheduled-walks/', views.ScheduledWalksView.as_view()),
     path('scheduled-walks/<int:pk>/', views.ScheduledWalksDetailsView.as_view()),
+    path('schedule-day-for-walker/<str:pk>/', views.SchedulesDetailsForWalkerView.as_view()),
+    path('schedule-hour-for-walker-and-day/<str:pk>/<str:day>', views.SchedulesDetailsForWalkerAndDayView.as_view()),
+    path('walkers/<str:pk>/<str:email>', views.WalkersDetailsView.as_view()),
     path('walkers/', views.WalkersView.as_view()),
     path('walkers/<str:pk>/', views.WalkersDetailsView.as_view()),
 ]

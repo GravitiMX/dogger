@@ -20,10 +20,11 @@ class DogSizeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ScheduleSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Schedules
         fields = '__all__'
-        depth = 1
+        
 
 class ScheduledWalkSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,4 +36,4 @@ class WalkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Walkers
         fields = '__all__'
-        depth = 5
+        depth = 1

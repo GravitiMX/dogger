@@ -15,10 +15,12 @@ import {
   RegisterDog,
   ScheduledWalker,
   DashboardWalker,
+  RegisterSize,
 } from './containers';
 
 import Cookies from 'universal-cookie';
 import RegisterSchedule from './containers/registerSchedule';
+import SelectAnidados from './components/select';
 
 const cookies = new Cookies();
 
@@ -72,13 +74,19 @@ function App(props) {
               
             </RegisterDog>
           </Route>
+          <Route path="/registerSize">
+            <RegisterSize>
+
+            </RegisterSize>
+          </Route>
+          
           
           <Route path= "/registrarSchedule">
             <RegisterSchedule>
               
             </RegisterSchedule>
           </Route>
-
+          
           <Route path = "/agendarPaseador">
             <ScheduledWalker/>
           </Route>
